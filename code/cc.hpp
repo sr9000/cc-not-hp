@@ -8,6 +8,7 @@ class shape_base {
 public:
     shape_base() = default;
     virtual f32 Area() = 0;
+    virtual ~shape_base() = default;
 };
 
 class square : public shape_base {

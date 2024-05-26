@@ -10,6 +10,20 @@ After wathcing a 📽️ "Clean" Code, Horrible Performance, I found Casey's fin
 
 [!["Clean" Code, Horrible Performance](https://img.youtube.com/vi/tD5NrevFtbU/0.jpg)](https://www.youtube.com/watch?v=tD5NrevFtbU)
 
+# UPD from 26 May 2024
+
+1. Implement Muratori's expand loop version.
+2. Added warming phase (100 loops)
+3. Measure on arrays of size 100K elements
+4. Runs each code 1000 times and analyze data in Libreoffice
+
+Best possible factor is 4.8 (90-th percentile vs 10-th)
+
+Comparing median-to-median gives factor of 4.25
+
+[Muratori-vs-clean-code.ods](https://github.com/sr9000/cc-not-hp/blob/main/Muratori-vs-clean-code.ods)
+
+
 # Code instead of words
 
 This repo contains two listings of code from the article [Computer, Enhance! - "Clean" Code, Horrible Performance](https://www.computerenhance.com/p/clean-code-horrible-performance).

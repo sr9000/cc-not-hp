@@ -5,6 +5,7 @@
 #include <iostream>
 
 static const int CYCLES = 1e5;
+static const int WARMING = 100;
 static const char* const measure_suffix = " ns/shape";
 
 void init_cc(shape_base** figs);
@@ -22,13 +23,32 @@ int main()
     std::ios_base::sync_with_stdio(false);
     std::cout.tie(nullptr);
 
+#ifndef CLEAN
     {
         std::cout << "CLEAN CODE" << std::endl;
 
         auto start = std::chrono::high_resolution_clock::now();
-        auto** figs = new shape_base*[CYCLES];
-        init_cc(figs);
+        shape_base** figs;
+
+        double sum = 0;
+        for (int i = 0; i < WARMING; ++i) {
+            figs = new shape_base*[CYCLES];
+            init_cc(figs);
+            sum += TotalAreaVTBL(CYCLES, figs);
+
+            for (int i = 0; i < CYCLES; i++) {
+                delete figs[i];
+            }
+            delete[] figs;
+        }
         auto end = std::chrono::high_resolution_clock::now();
+        std::cout << "warming\t" << ns_per_cycle(start, end, WARMING * CYCLES) << measure_suffix << std::endl;
+        std::cout << "result: " << sum / WARMING << std::endl;
+
+        start = std::chrono::high_resolution_clock::now();
+        figs = new shape_base*[CYCLES];
+        init_cc(figs);
+        end = std::chrono::high_resolution_clock::now();
 
         std::cout << "init\t" << ns_per_cycle(start, end, CYCLES) << measure_suffix << std::endl;
 
@@ -42,7 +62,7 @@ int main()
 
         delete[] figs;
     }
-
+#else
     std::cout << std::endl
               << std::endl;
 
@@ -50,14 +70,28 @@ int main()
         std::cout << "CASEY MURATORI" << std::endl;
 
         auto start = std::chrono::high_resolution_clock::now();
-        auto* figs = new shape_struct[CYCLES];
-        init_cm(figs);
+        shape_struct* figs;
+
+        double sum = 0;
+        for (int i = 0; i < WARMING; ++i) {
+            figs = new shape_struct[CYCLES];
+            init_cm(figs);
+            sum += GetAreaStructs4(CYCLES, figs);
+            delete[] figs;
+        }
         auto end = std::chrono::high_resolution_clock::now();
+        std::cout << "warming\t" << ns_per_cycle(start, end, WARMING * CYCLES) << measure_suffix << std::endl;
+        std::cout << "result: " << sum / WARMING << std::endl;
+
+        start = std::chrono::high_resolution_clock::now();
+        figs = new shape_struct[CYCLES];
+        init_cm(figs);
+        end = std::chrono::high_resolution_clock::now();
 
         std::cout << "init\t" << ns_per_cycle(start, end, CYCLES) << measure_suffix << std::endl;
 
         start = std::chrono::high_resolution_clock::now();
-        double area = GetAreaStructs(CYCLES, figs);
+        double area = GetAreaStructs4(CYCLES, figs);
         end = std::chrono::high_resolution_clock::now();
 
         std::cout << "calc\t" << ns_per_cycle(start, end, CYCLES) << measure_suffix << std::endl;
@@ -66,6 +100,7 @@ int main()
 
         delete[] figs;
     }
+#endif
     return 0;
 }
 
